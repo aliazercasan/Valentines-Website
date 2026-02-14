@@ -10,15 +10,6 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
-    build: {
-        manifest: true,
-        outDir: 'public/build',
-        rollupOptions: {
-            output: {
-                manualChunks: undefined,
-            },
-        },
-    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],
