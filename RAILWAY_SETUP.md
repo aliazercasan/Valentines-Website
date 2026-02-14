@@ -1,13 +1,13 @@
 # 🚂 Railway Deployment Setup
 
-## Critical: Environment Variables
+## Environment Variables to Set in Railway
 
-Go to your Railway project → Variables tab and add these **REQUIRED** variables:
+Go to your Railway project → Variables tab and add these:
 
 ```env
 APP_NAME=Valentine's Day
 APP_ENV=production
-APP_KEY=base64:YOUR_APP_KEY_HERE
+APP_KEY=base64:YOUR_KEY_HERE
 APP_DEBUG=false
 APP_URL=https://your-app.railway.app
 
@@ -26,90 +26,68 @@ LOG_CHANNEL=stack
 LOG_LEVEL=error
 ```
 
-## Step-by-Step Deployment
+## Steps to Deploy
 
-### 1. Generate APP_KEY Locally
-```bash
-php artisan key:generate --show
-```
-Copy the output (e.g., `base64:xxxxx...`)
+1. **Connect GitHub Repository**
+   - Go to Railway dashboard
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your repository
 
-### 2. Add MySQL Database in Railway
-- Click "New" → "Database" → "Add MySQL"
-- Railway will auto-populate: `MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD`
+2. **Add MySQL Database**
+   - Click "New" → "Database" → "Add MySQL"
+   - Railway will automatically set the database variables
 
-### 3. Set Environment Variables
-In Railway Variables tab, add:
-- `APP_KEY` = (paste the key from step 1)
-- `APP_ENV` = `production`
-- `APP_DEBUG` = `false`
-- `APP_URL` = `https://your-app.railway.app` (use your actual Railway URL)
-- `SESSION_DRIVER` = `file`
-- `CACHE_DRIVER` = `file`
-- `QUEUE_CONNECTION` = `sync`
-- `DB_CONNECTION` = `mysql`
+3. **Set Environment Variables**
+   - Copy the variables above
+   - Replace `YOUR_KEY_HERE` with your actual app key
+   - Railway will auto-fill the MySQL variables
 
-### 4. Deploy from GitHub
-- Connect your GitHub repository
-- Railway will automatically build and deploy
+4. **Deploy**
+   - Railway will automatically:
+     - Install dependencies
+     - Run `npm run build`
+     - Start your application
 
-### 5. Run Migrations (One-Time)
-After first deployment, go to your service:
-- Click "Settings" → "Deploy"
-- Under "Custom Start Command", temporarily add:
-```bash
-php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
-```
-- Redeploy
-- After successful migration, remove the custom command (or change back to default)
+5. **Run Migrations**
+   - Go to your service settings
+   - Click on "Deploy" tab
+   - Add a custom start command temporarily:
+   ```bash
+   php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
+   ```
+   - After first deployment, change it back to:
+   ```bash
+   php artisan serve --host=0.0.0.0 --port=$PORT
+   ```
 
-### 6. Debug (If 500 Error)
-Visit: `https://your-app.railway.app/railway-debug.php`
-This will show what's missing. **Delete this file after fixing!**
+## Troubleshooting
 
-## Common Issues
+### Assets Not Loading
+If CSS/JS aren't loading, check:
+1. Build logs show `npm run build` completed
+2. `public/build/` directory exists
+3. `APP_URL` matches your Railway domain
 
-### Issue: 500 Error
-**Cause**: Missing APP_KEY or wrong environment variables
-**Fix**: 
-1. Ensure `APP_KEY` is set in Railway variables
-2. Check `APP_ENV=production`
-3. Visit `/railway-debug.php` to see what's wrong
+### Database Connection Issues
+- Verify MySQL service is running
+- Check that database variables are set
+- Ensure migrations ran successfully
 
-### Issue: Database Connection Error
-**Cause**: MySQL not connected or wrong credentials
-**Fix**:
-1. Ensure MySQL database is added in Railway
-2. Verify `DB_CONNECTION=mysql`
-3. Check that Railway auto-populated MySQL variables
+### 500 Error
+- Set `APP_DEBUG=true` temporarily to see errors
+- Check deployment logs
+- Verify `APP_KEY` is set
 
-### Issue: Assets Not Loading
-**Cause**: Build didn't complete or wrong APP_URL
-**Fix**:
-1. Check build logs for `npm run build` success
-2. Verify `APP_URL` matches your Railway domain
-3. Check `public/build/` directory exists in deployment
+## Custom Domain
 
-### Issue: Storage Errors
-**Cause**: Storage directories not writable
-**Fix**: Already handled in `nixpacks.toml` - redeploy if needed
-
-## Checklist
-
-Before deploying:
-- [ ] `APP_KEY` generated and set
-- [ ] MySQL database added
-- [ ] All environment variables set
-- [ ] Repository pushed to GitHub
-- [ ] Railway connected to GitHub repo
-
-After deploying:
-- [ ] Visit your app URL
-- [ ] Run migrations (one-time)
-- [ ] Test registration
-- [ ] Test message creation
-- [ ] Delete `railway-debug.php`
+To use a custom domain:
+1. Go to Settings → Domains
+2. Click "Add Domain"
+3. Enter your domain
+4. Update DNS records as shown
+5. Update `APP_URL` environment variable
 
 ---
 
-Your app should now be live! 🚀💕
+Your app should now be live at: `https://your-app.railway.app` 🚀

@@ -10,11 +10,8 @@ cmds = [
 [phases.build]
 cmds = [
     'npm run build',
-    'mkdir -p storage/framework/{sessions,views,cache}',
-    'mkdir -p storage/logs',
-    'chmod -R 775 storage bootstrap/cache',
-    'php artisan storage:link || true'
+    'chmod +x railway-start.sh'
 ]
 
 [start]
-cmd = 'php artisan serve --host=0.0.0.0 --port=${PORT:-8000}'
+cmd = './railway-start.sh'
